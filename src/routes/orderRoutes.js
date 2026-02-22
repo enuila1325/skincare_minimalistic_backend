@@ -2,7 +2,8 @@ import express from "express";
 import {
     createOrder,
     uploadProof,
-    getOrders
+    getOrders,
+    updateOrderStatus
 } from "../controllers/orderController.js";
 import { upload } from "../middleware/upload.js";
 
