@@ -13,7 +13,6 @@ export const createOrder = async (req, res) => {
 
         const orderItems = items.map((item) => {
             const product = products.find((p) => p._id.toString() === item.productId);
-
             const subtotal = product.price * item.quantity;
             total += subtotal;
 
@@ -21,6 +20,8 @@ export const createOrder = async (req, res) => {
                 product: product._id,
                 quantity: item.quantity,
                 price: product.price,
+                selectedImage: item.selectedImage ?? product.images?.[0] ?? product.image,
+                variantIndex: item.variantIndex ?? 0,
             };
         });
 
@@ -66,11 +67,11 @@ export const getOrders = async (req, res) => {
 };
 
 export const updateOrderStatus = async (req, res) => {
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status: req.body.status },
-    { new: true }
-  );
+    const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+    );
 
-  res.json(order);
+    res.json(order);
 };

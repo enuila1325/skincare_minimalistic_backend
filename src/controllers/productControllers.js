@@ -3,14 +3,25 @@ import Product from "../models/Product.js";
 // @desc Obtener todos los productos
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate({
-        path: "subcategory",
-        populate: {
-          path: "category",
-          model: "Category",
-        },
-      });
+    const { category, featured } = req.query;
+
+    let products = await Product.find().populate({
+      path: "subcategory",
+      populate: {
+        path: "category",
+        model: "Category",
+      },
+    });
+
+    if (category) {
+      products = products.filter(
+        (p) => String(p.subcategory?.category?._id) === String(category)
+      );
+    }
+
+    if (featured === "true") {
+      products = products.filter((p) => p.featured === true);
+    }
 
     res.json(products);
   } catch (error) {

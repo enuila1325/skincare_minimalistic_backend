@@ -13,7 +13,7 @@ export const getCategoryById = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   try {
-    const newCategory = new Category({ name: req.body.name });
+    const newCategory = new Category({ name: req.body.name, image: req.body.image });
     const saved = await newCategory.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -24,10 +24,9 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   const updated = await Category.findByIdAndUpdate(
     req.params.id,
-    { name: req.body.name },
+    { name: req.body.name, image: req.body.image },
     { new: true }
   );
-
   res.json(updated);
 };
 
