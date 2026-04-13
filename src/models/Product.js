@@ -11,6 +11,11 @@ const productSchema = new mongoose.Schema(
     stock: { type: Number, default: 0 },
     fechaCreacion: { type: Date, default: Date.now },
     fechaUltimoIngreso: { type: Date, default: Date.now },
+    subcategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategory",
+      required: true,
+    },
   },
   { timestamps: true }
 );

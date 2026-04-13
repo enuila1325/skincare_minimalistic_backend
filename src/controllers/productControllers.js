@@ -2,19 +2,20 @@ import Product from "../models/Product.js";
 
 // @desc Obtener todos los productos
 export const getProducts = async (req, res) => {
-  const { category, featured, search } = req.query;
+  try {
+    const products = await Product.find()
+      .populate({
+        path: "subcategory",
+        populate: {
+          path: "category",
+          model: "Category",
+        },
+      });
 
-  let query = {};
-
-  if (category) query.category = category;
-  if (featured) query.featured = featured === "true";
-
-  if (search) {
-    query.name = { $regex: search, $options: "i" };
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  const products = await Product.find(query).sort({ createdAt: -1 });
-  res.json(products);
 };
 
 // @desc Obtener producto por ID
@@ -30,22 +31,28 @@ export const getProductById = async (req, res) => {
 
 // @desc Crear producto
 export const createProduct = async (req, res) => {
-  const product = new Product(req.body);
-  const created = await product.save();
+  try {
+    const product = new Product({
+      ...req.body,
+      subcategory: req.body.subcategory,
+    });
 
-  res.status(201).json(created);
+    const saved = await product.save();
+    res.status(201).json(saved);
+  } catch (error) {
+    res.status(400).json({ message: "Error creando producto" });
+  }
 };
 
 // @desc Actualizar producto
 export const updateProduct = async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  if (!product) {
-    return res.status(404).json({ message: "Producto no encontrado" });
-  }
-
-  Object.assign(product, req.body);
-  const updated = await product.save();
+  const updated = await Product.findByIdAndUpdate(
+    req.params.id,
+    {
+      ...req.body,
+    },
+    { new: true }
+  );
 
   res.json(updated);
 };
